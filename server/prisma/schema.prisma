@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+enum Role {
+  Admin
+  User
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum PaymentMethod {
+  KBZ_PAY
+  AYA_PAY
+  WAVE_PAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id String @id @default(uuid())
+  userName String
+  email String @unique
+  password String @db.Text
+  avatar String?
+  publicId String?
+  role Role @default(User)
+  resetToken String?
+  refreshToken String?
+  resetTokenExpire DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart Cart?
+  orders Order[]
+  addresses Address[]
+}
+
+model Category {
+  id String @id @default(ulid())
+  name String
+  slug String @unique
+  description String?
+  status Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+  coupons Coupon[]
+}
+
+model Product {
+  id String @id @default(uuid())
+  title String
+  description String
+  price Decimal @db.Decimal(10,2)
+  stock Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id])
+
+  images ProductImage[]
+  cartItems CartItem[]
+  orderItems OrderItem[]
+  coupons Coupon[]
+
+  @@index([title])
+}
+
+model Banner {
+  id String @id @default(uuid())
+  title String
+  description String?
+  imageUrl String
+  publicId String
+  isActive Boolean @default(true)
+  startDate DateTime?
+  endDate DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductImage {
+  id String @id @default(uuid())
+  url String
+  publicId String
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id String @id @default(uuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+  cartItems CartItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id String @id @default(uuid())
+  quantity Int @default(1)
+  price Decimal @db.Decimal(18,2)
+  productId String
+  cartId String
+  cart Cart @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id String @id @default(uuid())
+  orderCode String
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  addressId String
+  address Address @relation(fields: [addressId], references: [id])
+
+  discount Decimal @db.Decimal(18,2) @default(0)
+  deliveryFee Decimal @db.Decimal(10,2) @default(0)
+  total Decimal @db.Decimal(18,2)
+
+  status OrderStatus @default(PENDING)
+
+  items OrderItem[]
+  payment Payment?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+  orderId String
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product Product @relation(fields: [productId], references: [id])
+  quantity Int
+  price Decimal @db.Decimal(18,2)
+}
+
+model Coupon {
+  id String @id @default(uuid())
+  code String @unique
+  description String?
+  discountType DiscountType @default(PERCENTAGE)
+  discountValue Decimal @db.Decimal(18,2)
+  maxUses Int @default(1)
+  usedCount Int @default(0)
+  minOrderValue Decimal @db.Decimal(18,2) @default(0)
+  startDate DateTime
+  endDate DateTime
+  status Boolean @default(true)
+
+  applicableCategoryId String?
+  category Category? @relation(fields: [applicableCategoryId], references: [id])
+
+  applicableProductId String?
+  product Product? @relation(fields: [applicableProductId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id String @id @default(ulid())
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+  transactionId String?
+  amount Decimal @db.Decimal(18,2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderId String @unique
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model DeliveryFee {
+  id String @id @default(uuid())
+  regionName String
+  feeAmount Decimal @db.Decimal(10,2)
+  minOrderValue Decimal @db.Decimal(18,2) @default(0)
+  status Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  fullName String
+  phoneNumber String
+  streetAddress String
+  city String
+  region String
+  postalCode String?
+  isDefault Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
