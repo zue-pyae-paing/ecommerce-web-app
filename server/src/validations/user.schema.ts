@@ -35,3 +35,23 @@ export const resetPasswordSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
 });
+
+export const paramsSchema = z.object({
+  id: z.string().uuid({ message: "Invalid id" }),
+});
+
+export const changeUserNameSchema = z.object({
+  userName: z
+    .string()
+    .min(3, { message: "UserName must be at least 3 characters" })
+    .max(20, { message: "UserName must be at most 20 characters" }),
+});
+
+export const changePasswordSchema = z.object({
+  oldPassword: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+  newPassword: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+});

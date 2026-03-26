@@ -10,6 +10,7 @@ import * as bcrypt from "bcryptjs";
 import {
   generateAccessToken,
   generateRefreshToken,
+  verifyToken,
 } from "../utils/generateToken";
 import crypto from "crypto";
 const authServices = {
@@ -92,6 +93,27 @@ const authServices = {
       where: { id: existingUser.id },
       data: { password: newPassword, resetToken: null, resetTokenExpire: null },
     });
+  },
+  refreshToken: async (token: string) => {
+    if (!token) throw createError.BadRequest("Refresh token not found");
+    let decodedToken;
+    try {
+      decodedToken = verifyToken(token);
+    } catch (error) {
+      throw createError.BadRequest("Invalid refresh Token!");
+    }
+    const existingUser = await prisma.user.findUnique({
+      where: { id: decodedToken.id },
+    });
+    if (!existingUser) throw createError.NotFound("User not found!");
+    const accessToken = generateAccessToken({
+      id: existingUser.id,
+      email: existingUser.email,
+      role: existingUser.role,
+    });
+    return {
+      accessToken,
+    };
   },
 };
 

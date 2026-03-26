@@ -23,6 +23,12 @@ router.post(
   authControllers.forgotPassword,
 );
 
-router.put("/reset-password/:token",validate({body:resetPasswordSchema}),authControllers.resetPassword)
+router.put(
+  "/reset-password/:token",
+  validate({ body: resetPasswordSchema }),
+  authControllers.resetPassword,
+);
+
+router.post("/refresh-token", authControllers.refreshToken);
 
 export default router;
