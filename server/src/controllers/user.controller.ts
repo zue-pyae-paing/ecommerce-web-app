@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import userServices from "../services/user.service";
-import { tr } from "zod/v4/locales";
+
 
 const userController = {
   getProfile: async (req: Request, res: Response, next: NextFunction) => {

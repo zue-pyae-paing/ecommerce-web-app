@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import authServices from "../services/auth.service";
 import { sendMail } from "../utils/sendMail";
-import { success } from "zod";
-import { ref } from "process";
+
 
 const authControllers = {
   register: async (req: Request, res: Response, next: NextFunction) => {
