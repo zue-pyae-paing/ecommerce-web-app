@@ -14,4 +14,4 @@ export const categorySchema = z.object({
   status: z.boolean({ message: "Category status is required" }),
 });
 
-export const paramsSchema = z.object({ id: z.string().ulid() });
+export const paramsSchema = z.object({ id: z.string().uuid() });
