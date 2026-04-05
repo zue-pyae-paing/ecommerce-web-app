@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import bannerService from "../services/banner.service";
+import bannerService from "../services/banner.service.js";
 
 const bannerController = {
   getBanner: async (req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +26,8 @@ const bannerController = {
   updateBanner: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = req.params.id;
-        const banner = await bannerService.updateBanner({ ...req.body, id });
+      const file = req.file as Express.Multer.File;
+        const banner = await bannerService.updateBanner({ ...req.body, id },file);
         res.status(200).json({
           success: true,
           message: "Banner updated successfully",

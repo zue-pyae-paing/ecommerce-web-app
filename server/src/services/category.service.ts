@@ -1,5 +1,5 @@
-import { CreateCategoryDto, UpdateCategoryDto } from "../dtos/category.dto";
-import { prisma } from "../lib/prisma";
+import { CreateCategoryDto, UpdateCategoryDto } from "../dtos/category.dto.js";
+import { prisma } from "../lib/prisma.js";
 import createError from "http-errors";
 const categoryService = {
   getAllCategories: async () => {
