@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import productServices from "../services/prodcut.service";
-import { asyncWrapProviders } from "node:async_hooks";
+import productServices from "../services/prodcut.service.js";
+import { CreateProductDto } from "../dtos/product.dto.js";
+
 
 const productController = {
   getAllProducts: async (req: Request, res: Response, next: NextFunction) => {
@@ -43,7 +44,10 @@ const productController = {
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const files = req.files as Express.Multer.File[];
-      const product = await productServices.createProduct(req.body, files);
+      const price = req.body.price ? Number(req.body.price) : undefined;
+      const stock = req.body.stock ? Number(req.body.stock) : undefined;
+      const dto = { ...req.body, price, stock } as CreateProductDto;
+      const product = await productServices.createProduct(dto, files);
       res.status(201).json({
         success: true,
         message: "Product created successfully",

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlewares/‌auth.middleware";
-import userController from "../controllers/user.controller";
-import { validate } from "../middlewares/validation.middleware";
-import { changePasswordSchema, changeUserNameSchema } from "../validations/user.schema";
-import { upload } from "../middlewares/upload.middleware";
+import { authMiddleware } from "../middlewares/‌auth.middleware.js";
+import userController from "../controllers/user.controller.js";
+import { validate } from "../middlewares/validation.middleware.js";
+import { changePasswordSchema, changeUserNameSchema } from "../validations/user.schema.js";
+import { upload } from "../middlewares/upload.middleware.js";
 
 const router = Router();
 router.use(authMiddleware);

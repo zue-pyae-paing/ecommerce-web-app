@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import { verifyToken } from "../utils/generateToken";
+import { verifyToken } from "../utils/generateToken.js";
 type UserReq = {
   id: string;
   email: string;

@@ -11,10 +11,12 @@ export const createProductSchema = z.object({
     .max(500, {
       message: "Product description must be at most 500 characters",
     }),
-  price: z.number().positive({ message: "Price must be a positive number" }),
-  stock: z
-    .number()
-    .int()
-    .nonnegative({ message: "Stock must be a non-negative integer" }),
-  categoryId: z.string().uuid(),
+  price: z.coerce.number().positive(),
+  stock: z.coerce.number().int().nonnegative(),
+
+  categoryId: z.string().ulid(),
+});
+
+export const productIdParamSchema = z.object({
+  id: z.string().uuid("Invalid product ID format"),
 });
