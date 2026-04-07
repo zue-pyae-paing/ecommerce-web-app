@@ -1,5 +1,9 @@
 import { Prisma } from "../../generated/prisma/index.js";
-import { CreateCouponDto, GetAllCouponDto } from "../dtos/coupon.dto.js";
+import {
+  ApplyCouponDto,
+  CreateCouponDto,
+  GetAllCouponDto,
+} from "../dtos/coupon.dto.js";
 import { prisma } from "../lib/prisma.js";
 
 import createError from "http-errors";
@@ -55,12 +59,70 @@ const couponService = {
         discountType: dto.discountType,
         startDate: dto.startDate,
         endDate: dto.endDate,
-        applivablecategoryId: dto.applivablecategoryId,
+        applicableCategoryId: dto.applicableCategoryId,
+        applicableProductId: dto.applicableProductId,
       },
     });
     return newCoupon;
   },
-  applyCoupon: async (code: string, userId: string) => {},
+  applyCoupon: async (dto: ApplyCouponDto) => {
+    const { code, totalAmount, applicableCategoryId, applicableProductId } =
+      dto;
+    if (!code) throw createError.BadRequest("Coupon code is required");
+    const coupon = await prisma.coupon.findUnique({ where: { code } });
+    if (!coupon) throw createError.NotFound("Coupon not found");
+    const currentDate = new Date();
+    if (coupon.startDate > currentDate || coupon.endDate < currentDate) {
+      throw createError.BadRequest("Coupon is not valid at this time");
+    }
+    if (coupon.minOrderValue && totalAmount < Number(coupon.minOrderValue)) {
+      throw createError.BadRequest(
+        `Minimum order value for this coupon is ${coupon.minOrderValue}`,
+      );
+    }
+    let discountAmount = 0;
+    if (coupon.discountType === "PERCENTAGE") {
+      discountAmount = (totalAmount * Number(coupon.discountValue)) / 100;
+    } else {
+      discountAmount = Number(coupon.discountValue);
+    }
+
+    if (discountAmount > totalAmount) {
+      discountAmount = totalAmount;
+    }
+
+    if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+      throw createError.BadRequest("This coupon has been used up");
+    }
+
+    if (!coupon.status) {
+      throw createError.BadRequest("This coupon is not active");
+    }
+
+    if (
+      coupon.applicableCategoryId &&
+      applicableCategoryId !== coupon.applicableCategoryId
+    ) {
+      throw createError.BadRequest(
+        "This coupon is not applicable for this category",
+      );
+    }
+    if (
+      coupon.applicableProductId &&
+      applicableProductId !== coupon.applicableProductId
+    ) {
+      throw createError.BadRequest(
+        "This coupon is not applicable for this product",
+      );
+    }
+
+    return {
+      discountAmount,
+      discountType: coupon.discountType,
+      finalAmount: totalAmount - discountAmount,
+      couponId: coupon.id,
+    };
+  },
   updateCoupon: async (id: string, dto: CreateCouponDto) => {
     if (!id) throw createError.BadRequest("Coupon ID is required");
 
@@ -96,7 +158,8 @@ const couponService = {
         discountType: dto.discountType,
         startDate: dto.startDate,
         endDate: dto.endDate,
-        applivablecategoryId: dto.applivablecategoryId,
+        applicableCategoryId: dto.applicableCategoryId,
+        applicableProductId: dto.applicableProductId,
       },
     });
     if (!updatedCoupon) {
