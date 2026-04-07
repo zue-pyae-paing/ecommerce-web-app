@@ -67,6 +67,26 @@ const couponController = {
   },
   applyCoupon: async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const code = req.body.code as string;
+      const totalAmount = Number(req.body.totalAmount);
+      const applicableCategoryId = req.body.applicableCategoryId as
+        | string
+        | undefined;
+      const applicableProductId = req.body.applicableProductId as
+        | string
+        | undefined;
+
+      const result = await couponService.applyCoupon({
+        code,
+        totalAmount,
+        applicableCategoryId,
+        applicableProductId,
+      });
+      res.status(200).json({
+        success: true,
+        message: "Coupon applied successfully",
+        data: result,
+      });
     } catch (error) {
       next(error);
     }

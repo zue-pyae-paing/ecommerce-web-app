@@ -9,12 +9,19 @@ export interface GetAllCouponDto {
 export interface CreateCouponDto {
   code: string;
   discountValue: number;
-
   description?: string;
   maxUses: number;
   minOrderValue: number;
   discountType: "PERCENTAGE" | "FIXED_AMOUNT";
   startDate: Date;
   endDate: Date;
-  applivablecategoryId?: string;
+  applicableCategoryId?: string;
+  applicableProductId?: string;
+}
+
+export interface ApplyCouponDto {
+  code: string;
+  totalAmount: number;
+  applicableProductId?: string;
+  applicableCategoryId?: string;
 }
