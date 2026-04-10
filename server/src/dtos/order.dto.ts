@@ -7,7 +7,7 @@ export interface GetAllOrdersDto {
 }
 
 export interface GetAllOwnerOrdersDto {
-  ownerId: string;
+  ownerId?: string;
   cursor?: string;
   limit?: number;
   search?: string;
@@ -19,7 +19,4 @@ export interface CreateOrderDto {
   userId: string;
   cartId: string;
   addressId: string;
-  paymentId: string;
-  couponId?: string;
-  discount?: number;
 }

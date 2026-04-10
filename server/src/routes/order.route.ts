@@ -10,8 +10,7 @@ router.use(authMiddleware);
 router.get("/", adminMiddleware, orderController.getAllOrders);
 router.get("/owner", orderController.getAllOwnerOrders);
 router.get("/:id", orderController.getOneOrder);
-router.post("/", orderController.createOrder);
-router.put("/:id", orderController.updateOrder);
+router.post("/:id", orderController.createOrder);
 router.delete("/:id", orderController.deleteOrder);
 
 export default router
