@@ -9,6 +9,7 @@ import categoryRoutes from "./routes/category.route.js";
 import productRoutes from "./routes/product.route.js";
 import bannerRoutes from "./routes/banner.route.js";
 import cartRoutes from "./routes/cart.route.js";
+import addressRoutes from './routes/address.route.js'
 
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 
@@ -26,6 +27,7 @@ app.use('/api/v1/categories', categoryRoutes)
 app.use("/api/v1/products",productRoutes)
 app.use("/api/v1/banners",bannerRoutes);
 app.use("/api/v1/carts", cartRoutes);
+app.use("api/v1/address",addressRoutes)
 
 app.use(errorMiddleware);
 app.listen(3000, () => {

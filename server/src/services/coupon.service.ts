@@ -116,6 +116,21 @@ const couponService = {
       );
     }
 
+    await prisma.$transaction(async (tx) => {
+      await tx.coupon.update({
+        where: { id: coupon.id },
+        data: { usedCount: { increment: 1 } },
+      });
+
+      await tx.order.update({
+        where: { id: dto.orderId },
+        data: { 
+          discount: discountAmount,
+          total: new Prisma.Decimal(totalAmount - discountAmount),
+        },
+      });
+    });
+
     return {
       discountAmount,
       discountType: coupon.discountType,

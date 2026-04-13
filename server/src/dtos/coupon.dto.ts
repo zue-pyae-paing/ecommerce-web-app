@@ -22,6 +22,7 @@ export interface CreateCouponDto {
 export interface ApplyCouponDto {
   code: string;
   totalAmount: number;
+  orderId: string;
   applicableProductId?: string;
   applicableCategoryId?: string;
 }
