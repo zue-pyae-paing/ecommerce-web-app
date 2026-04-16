@@ -32,6 +32,7 @@ enum PaymentMethod {
 enum PaymentStatus {
   PENDING
   PAID
+
 }
 
 enum OrderStatus {
@@ -198,9 +199,10 @@ model Payment {
   amount Decimal @db.Decimal(18,2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  senderPhone String
   orderId String @unique
   order Order @relation(fields: [orderId], references: [id])
+  @@index([orderId])
 }
 
 model DeliveryFee {
